@@ -1,0 +1,110 @@
+{
+  "Metadata": {
+    "title": "ScamHawk - 加密钱包地址与网站风险查询",
+    "description": "输入钱包地址或网址，即时查询该对象是否被 Chainabuse 社区举报为诈骗。"
+  },
+  "Nav": {
+    "check": "风险查询",
+    "pricing": "价格",
+    "dashboard": "监控台",
+    "signIn": "登录"
+  },
+  "Home": {
+    "heroTitle": "查一查，再交易",
+    "heroSubtitle": "输入钱包地址或网址，查询它是否被 Chainabuse 社区举报为诈骗，保护你的资产安全。",
+    "searchPlaceholder": "粘贴钱包地址或网址，例如 0x8ba1… 或 example.com",
+    "searchButton": "开始查询",
+    "examples": "试试：",
+    "checking": "查询中…",
+    "emptyInput": "请输入钱包地址或网址。",
+    "invalidInput": "无法识别：请输入有效的钱包地址或网址。",
+    "networkError": "查询失败，请稍后重试。",
+    "mockNotice": "演示模式：尚未配置 Chainabuse API Key，以下为模拟结果，请勿作为安全依据。"
+  },
+  "Risk": {
+    "SAFE": "安全",
+    "SUSPICIOUS": "可疑",
+    "SCAM": "高风险",
+    "UNKNOWN": "未知",
+    "SAFE_DESC": "未发现与诈骗相关的举报记录",
+    "SUSPICIOUS_DESC": "存在少量可疑关联，交易前请谨慎核实",
+    "SCAM_DESC": "该对象曾被举报用于诈骗活动，请勿向其转账",
+    "UNKNOWN_DESC": "暂无足够数据判断风险",
+    "reports": "举报记录",
+    "categories": "举报类型",
+    "checkedAt": "查询时间",
+    "entity": "查询对象",
+    "addToWatch": "加入监控",
+    "watching": "监控中",
+    "signInToWatch": "登录后可监控该对象",
+    "watchAdded": "已加入监控列表",
+    "watchError": "加入监控失败，请稍后重试"
+  },
+  "Pricing": {
+    "title": "选择你的方案",
+    "subtitle": "免费开始，随时升级。订阅后即可不限次数查询并监控任意地址与网站。",
+    "freeName": "免费版",
+    "freePrice": "¥0",
+    "freePeriod": "永久免费",
+    "freeFeatures": ["每日 10 次风险查询", "查询结果与举报详情", "社区数据同步"],
+    "proName": "专业版",
+    "proPrice": "¥29",
+    "proPeriod": "/ 月",
+    "proFeatures": ["不限次数风险查询", "无限监控地址与网站", "每 6 小时自动复查", "风险变化即时提醒"],
+    "cta": "订阅",
+    "ctaCurrent": "当前方案",
+    "configureNote": "支付通道（Paddle）尚未配置，配置 PADDLE_PRICE_ID_PRO_MONTHLY 与客户端 Token 后开放订阅。",
+    "signInNote": "登录后即可订阅",
+    "openingLabel": "正在打开支付…",
+    "subscriptionActive": "订阅已生效，感谢支持！",
+    "checkoutError": "无法打开支付页面，请稍后重试。"
+  },
+  "Dashboard": {
+    "title": "监控台",
+    "subtitle": "监控中的地址与网站会在发现新举报时更新风险。",
+    "empty": "还没有监控项，去首页查一个地址并加入监控吧。",
+    "goCheck": "去查询",
+    "columnValue": "对象",
+    "columnType": "类型",
+    "columnRisk": "风险",
+    "columnReports": "举报",
+    "columnLastChecked": "上次检查",
+    "columnActions": "操作",
+    "remove": "移除",
+    "never": "从未",
+    "typeADDRESS": "地址",
+    "typeWEBSITE": "网站",
+    "notConfigured": "尚未配置 Clerk 环境变量（NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY），登录功能不可用。请参考 .env.example 配置后重启。",
+    "signInRequired": "请先登录后查看监控台。",
+    "planLabel": "当前方案",
+    "planPro": "专业版会员",
+    "planFree": "免费版",
+    "totalWatched": "监控中",
+    "highRisk": "高风险",
+    "suspicious": "可疑",
+    "columnCategories": "类别"
+  },
+  "Features": {
+    "sectionTitle": "为什么选择 ScamHawk",
+    "item0": {
+      "title": "社区驱动的安全数据",
+      "desc": "聚合 Chainabuse 社区举报，让你在交易前了解真实风险。"
+    },
+    "item1": {
+      "title": "智能监控",
+      "desc": "加入监控后每 6 小时自动复查，风险变化第一时间通知你。"
+    },
+    "item2": {
+      "title": "实时查询",
+      "desc": "输入地址或网址，毫秒级返回风险评估与举报详情。"
+    },
+    "item3": {
+      "title": "多链支持",
+      "desc": "支持 Ethereum、Bitcoin、Solana、Tron 主流链地址与任意网站。"
+    }
+  },
+  "Footer": {
+    "tagline": "让每一笔交易都更安全",
+    "disclaimer": "查询结果仅供参考，不构成任何投资或安全建议。"
+  }
+}

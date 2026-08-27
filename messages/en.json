@@ -1,0 +1,110 @@
+{
+  "Metadata": {
+    "title": "ScamHawk - Check crypto wallet addresses & websites for risk",
+    "description": "Paste a wallet address or URL to instantly check whether it has been reported as a scam by the Chainabuse community."
+  },
+  "Nav": {
+    "check": "Check",
+    "pricing": "Pricing",
+    "dashboard": "Dashboard",
+    "signIn": "Sign in"
+  },
+  "Home": {
+    "heroTitle": "Check before you trade",
+    "heroSubtitle": "Paste a wallet address or website to see if it has been reported as a scam by the Chainabuse community.",
+    "searchPlaceholder": "Paste a wallet address or URL, e.g. 0x8ba1… or example.com",
+    "searchButton": "Check now",
+    "examples": "Try:",
+    "checking": "Checking…",
+    "emptyInput": "Please enter a wallet address or URL.",
+    "invalidInput": "Unrecognized input: enter a valid wallet address or URL.",
+    "networkError": "Check failed, please try again later.",
+    "mockNotice": "Demo mode: no Chainabuse API key configured. The result below is simulated and must not be used as a security basis."
+  },
+  "Risk": {
+    "SAFE": "Safe",
+    "SUSPICIOUS": "Suspicious",
+    "SCAM": "High risk",
+    "UNKNOWN": "Unknown",
+    "SAFE_DESC": "No scam reports found",
+    "SUSPICIOUS_DESC": "Some suspicious associations found, verify carefully before transacting",
+    "SCAM_DESC": "This entity has been reported for scam activity, do not send funds to it",
+    "UNKNOWN_DESC": "Not enough data to assess risk",
+    "reports": "Reports",
+    "categories": "Categories",
+    "checkedAt": "Checked at",
+    "entity": "Entity",
+    "addToWatch": "Watch",
+    "watching": "Watching",
+    "signInToWatch": "Sign in to watch this entity",
+    "watchAdded": "Added to your watchlist",
+    "watchError": "Failed to add to watchlist, try again later"
+  },
+  "Pricing": {
+    "title": "Choose your plan",
+    "subtitle": "Start free, upgrade anytime. Subscribe for unlimited checks and monitoring of any address or website.",
+    "freeName": "Free",
+    "freePrice": "$0",
+    "freePeriod": "forever",
+    "freeFeatures": ["10 risk checks per day", "Results with report details", "Community data sync"],
+    "proName": "Pro",
+    "proPrice": "$4",
+    "proPeriod": "/ month",
+    "proFeatures": ["Unlimited risk checks", "Unlimited watched addresses & websites", "Automatic re-check every 6 hours", "Instant alerts on risk changes"],
+    "cta": "Subscribe",
+    "ctaCurrent": "Current plan",
+    "configureNote": "Payments (Paddle) are not configured yet. Set PADDLE_PRICE_ID_PRO_MONTHLY and a client token to enable checkout.",
+    "signInNote": "Sign in to subscribe",
+    "openingLabel": "Opening checkout…",
+    "subscriptionActive": "Your subscription is active — thanks for supporting ScamHawk!",
+    "checkoutError": "Couldn't open checkout. Please try again later."
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Watched addresses and websites update their risk as new reports are found.",
+    "empty": "Nothing is being watched yet. Check an address on the home page and add it to your watchlist.",
+    "goCheck": "Check an address",
+    "columnValue": "Entity",
+    "columnType": "Type",
+    "columnRisk": "Risk",
+    "columnReports": "Reports",
+    "columnLastChecked": "Last checked",
+    "columnActions": "Actions",
+    "remove": "Remove",
+    "never": "Never",
+    "typeADDRESS": "Address",
+    "typeWEBSITE": "Website",
+    "notConfigured": "Clerk env vars (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY / CLERK_SECRET_KEY) are missing, sign-in is unavailable. See .env.example and restart.",
+    "signInRequired": "Please sign in to view your dashboard.",
+    "planLabel": "Current plan",
+    "planPro": "Pro member",
+    "planFree": "Free",
+    "totalWatched": "Watching",
+    "highRisk": "High risk",
+    "suspicious": "Suspicious",
+    "columnCategories": "Categories"
+  },
+  "Features": {
+    "sectionTitle": "Why ScamHawk",
+    "item0": {
+      "title": "Community-driven data",
+      "desc": "Aggregates Chainabuse community reports so you know the real risk before you trade."
+    },
+    "item1": {
+      "title": "Smart monitoring",
+      "desc": "Add an entity to your watchlist and we re-check it every 6 hours, alerting you to risk changes."
+    },
+    "item2": {
+      "title": "Instant checks",
+      "desc": "Paste an address or URL and get a risk assessment with report details in milliseconds."
+    },
+    "item3": {
+      "title": "Multi-chain support",
+      "desc": "Supports Ethereum, Bitcoin, Solana, Tron addresses and any website."
+    }
+  },
+  "Footer": {
+    "tagline": "Make every transaction safer",
+    "disclaimer": "Results are for reference only and do not constitute investment or security advice."
+  }
+}

@@ -1,0 +1,118 @@
+// ScamHawk 数据模型
+// 应用数据库使用 Neon PostgreSQL：
+//   1. 复制 .env.example 为 .env.local 并填写 DATABASE_URL
+//   2. npm run prisma:generate
+//   3. npm run prisma:push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum RiskLevel {
+  SAFE
+  SUSPICIOUS
+  SCAM
+  UNKNOWN
+}
+
+enum EntityType {
+  ADDRESS
+  WEBSITE
+}
+
+/// 本地用户。与 Clerk 认证一一对应（clerkId 唯一）。
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+  watchItems    WatchItem[]
+  checkRecords  CheckRecord[]
+}
+
+/// 用户监控的钱包地址或网站。
+/// 由 Vercel Cron（/api/cron/watch，每 6 小时）自动复查 nextCheckAt 到期的项。
+model WatchItem {
+  id            String     @id @default(cuid())
+  userId        String
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          EntityType
+  value         String
+  riskLevel     RiskLevel  @default(UNKNOWN)
+  riskScore     Int?
+  reportCount   Int        @default(0)
+  categories    String[]   @default([])
+  lastCheckedAt DateTime?
+  nextCheckAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([userId, type, value])
+  @@index([nextCheckAt])
+}
+
+/// 每次查询的历史记录（登录用户）。
+model CheckRecord {
+  id          String     @id @default(cuid())
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type        EntityType
+  value       String
+  riskLevel   RiskLevel
+  riskScore   Int?
+  reportCount Int        @default(0)
+  details     Json?
+  createdAt   DateTime   @default(now())
+
+  @@index([value])
+  @@index([createdAt])
+}
+
+/// Paddle 订阅（通过 /api/paddle/webhook 全事件同步）。
+/// status 保存 Paddle 原始状态：active / trialing / past_due / paused / canceled。
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paddleSubscriptionId String    @unique
+  paddleCustomerId     String?
+  status               String // active / trialing / past_due / paused / canceled
+  planId               String // Paddle product id（或 price id 兜底）
+  priceId              String?
+  currencyCode         String?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  startedAt            DateTime?
+  firstBilledAt        DateTime?
+  nextBilledAt         DateTime?
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  pausedAt             DateTime?
+  canceledAt           DateTime?
+  scheduledChange      Json? // { action, effective_at, resume_at }
+  items                Json? // 订阅条目快照（价格/产品/数量）
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([userId, status])
+}
+
+/// Paddle webhook 事件审计日志：每个事件落库，天然幂等去重（eventId 唯一）。
+model PaddleEvent {
+  id         String   @id @default(cuid())
+  eventId    String   @unique
+  eventType  String
+  occurredAt DateTime?
+  status     String // processed / ignored / error
+  note       String?
+  data       Json
+  receivedAt DateTime @default(now())
+}
