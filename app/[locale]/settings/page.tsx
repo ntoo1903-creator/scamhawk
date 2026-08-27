@@ -1,4 +1,5 @@
-import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getClerkUserId, isClerkConfigured } from '@/lib/auth';
@@ -13,9 +14,25 @@ import {
   ArrowRightIcon,
 } from 'lucide-react';
 
-export const metadata = { title: 'Settings' };
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Settings' });
+  return {
+    title: t('title'),
+  };
+}
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations('Settings');
 
   // 未配置 Clerk

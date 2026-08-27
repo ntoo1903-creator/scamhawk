@@ -61,7 +61,7 @@
     "proName": "专业版",
     "proPrice": "¥29",
     "proPeriod": "/ 月",
-    "proFeatures": ["不限次数风险查询", "无限监控地址与网站", "每 6 小时自动复查", "风险变化即时提醒"],
+    "proFeatures": ["不限次数风险查询", "无限监控地址与网站", "每天自动复查", "风险变化即时提醒"],
     "cta": "订阅",
     "ctaCurrent": "当前方案",
     "configureNote": "支付通道（Paddle）尚未配置，配置 PADDLE_PRICE_ID_PRO_MONTHLY 与客户端 Token 后开放订阅。",
@@ -110,7 +110,7 @@
     },
     "item1": {
       "title": "智能监控",
-      "desc": "加入监控后每 6 小时自动复查，风险变化第一时间通知你。"
+      "desc": "加入监控后每天自动复查，风险变化第一时间通知你。"
     },
     "item2": {
       "title": "实时查询",

@@ -61,7 +61,7 @@
     "proName": "Pro",
     "proPrice": "$4",
     "proPeriod": "/ month",
-    "proFeatures": ["Unlimited risk checks", "Unlimited watched addresses & websites", "Automatic re-check every 6 hours", "Instant alerts on risk changes"],
+    "proFeatures": ["Unlimited risk checks", "Unlimited watched addresses & websites", "Automatic re-check every day", "Instant alerts on risk changes"],
     "cta": "Subscribe",
     "ctaCurrent": "Current plan",
     "configureNote": "Payments (Paddle) are not configured yet. Set PADDLE_PRICE_ID_PRO_MONTHLY and a client token to enable checkout.",
@@ -110,7 +110,7 @@
     },
     "item1": {
       "title": "Smart monitoring",
-      "desc": "Add an entity to your watchlist and we re-check it every 6 hours, alerting you to risk changes."
+      "desc": "Add an entity to your watchlist and we re-check it every day, alerting you to risk changes."
     },
     "item2": {
       "title": "Instant checks",

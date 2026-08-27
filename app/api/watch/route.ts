@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       reportCount: result.reportCount,
       categories: result.categories,
       lastCheckedAt: new Date(),
-      nextCheckAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+      nextCheckAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
     create: {
       userId: user.id,
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
       reportCount: result.reportCount,
       categories: result.categories,
       lastCheckedAt: new Date(),
-      nextCheckAt: new Date(Date.now() + 6 * 60 * 60 * 1000),
+      nextCheckAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   });
 

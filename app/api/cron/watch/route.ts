@@ -6,7 +6,7 @@ import { isEmailConfigured, sendRiskChangeEmail } from '@/lib/email';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // 与 vercel.json 中的 cron 频率一致
+const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000; // 与 vercel.json 中的 cron 频率一致（每天一次）
 const BATCH_SIZE = 50;
 
 /**
