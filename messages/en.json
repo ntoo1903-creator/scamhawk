@@ -7,6 +7,7 @@
     "check": "Check",
     "pricing": "Pricing",
     "dashboard": "Dashboard",
+    "history": "History",
     "signIn": "Sign in"
   },
   "Home": {
@@ -131,5 +132,26 @@
     "usersSuffix": "",
     "billion": "B",
     "tenThousand": "0K"
+  },
+  "History": {
+    "title": "Check History",
+    "subtitle": "View your recent risk check records.",
+    "empty": "No check records yet. Check an address on the home page.",
+    "goCheck": "Check an address",
+    "totalRecords": "{count} records total",
+    "columnValue": "Entity",
+    "columnType": "Type",
+    "columnRisk": "Risk",
+    "columnReports": "Reports",
+    "columnTime": "Checked at",
+    "typeADDRESS": "Address",
+    "typeWEBSITE": "Website",
+    "notConfigured": "Clerk env vars are missing, sign-in is unavailable.",
+    "signInRequired": "Please sign in to view your check history.",
+    "filterAll": "All",
+    "filterSearch": "Search address…",
+    "filterClear": "Clear filters",
+    "filterResultCount": "Showing {filtered}/{total} records",
+    "filterEmpty": "No matching records"
   }
 }

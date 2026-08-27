@@ -7,6 +7,7 @@
     "check": "风险查询",
     "pricing": "价格",
     "dashboard": "监控台",
+    "history": "历史记录",
     "signIn": "登录"
   },
   "Home": {
@@ -131,5 +132,26 @@
     "usersSuffix": "人",
     "billion": "亿",
     "tenThousand": "万"
+  },
+  "History": {
+    "title": "查询历史",
+    "subtitle": "查看你最近的风险查询记录。",
+    "empty": "还没有查询记录，去首页查一个地址吧。",
+    "goCheck": "去查询",
+    "totalRecords": "共 {count} 条记录",
+    "columnValue": "查询对象",
+    "columnType": "类型",
+    "columnRisk": "风险",
+    "columnReports": "举报",
+    "columnTime": "查询时间",
+    "typeADDRESS": "地址",
+    "typeWEBSITE": "网站",
+    "notConfigured": "尚未配置 Clerk 环境变量，登录功能不可用。",
+    "signInRequired": "请先登录后查看查询历史。",
+    "filterAll": "全部",
+    "filterSearch": "搜索地址…",
+    "filterClear": "清除筛选",
+    "filterResultCount": "显示 {filtered}/{total} 条",
+    "filterEmpty": "没有匹配的记录"
   }
 }
