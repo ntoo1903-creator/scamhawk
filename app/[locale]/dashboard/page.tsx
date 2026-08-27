@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
 import { getClerkUserId, isClerkConfigured } from '@/lib/auth';
 import { hasProAccess } from '@/lib/paddle';
+import { FREE_TIER_LIMITS } from '@/lib/rate-limit';
 import DashboardFilters from '@/components/dashboard-filters';
 
 export const dynamic = 'force-dynamic';
@@ -45,20 +46,37 @@ export default async function DashboardPage({
   });
 
   const hasPro = await hasProAccess(clerkId);
+  const watchLimit = FREE_TIER_LIMITS.maxWatchItems;
+  const watchCount = items.length;
+  const watchRemaining = Math.max(0, watchLimit - watchCount);
 
   return (
     <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:py-16">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
-            hasPro
-              ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
-              : 'bg-gray-100 text-gray-600 ring-1 ring-gray-200'
-          }`}
-        >
-          {t('planLabel')}：{hasPro ? t('planPro') : t('planFree')}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* 免费版监控数量提示 */}
+          {!hasPro && items.length > 0 && (
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+                watchRemaining <= 1
+                  ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
+                  : 'bg-gray-100 text-gray-600 ring-1 ring-gray-200'
+              }`}
+            >
+              {t('watchUsage', { current: watchCount, limit: watchLimit })}
+            </span>
+          )}
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
+              hasPro
+                ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200'
+                : 'bg-gray-100 text-gray-600 ring-1 ring-gray-200'
+            }`}
+          >
+            {t('planLabel')}：{hasPro ? t('planPro') : t('planFree')}
+          </span>
+        </div>
       </div>
       <p className="mt-2 text-gray-600">{t('subtitle')}</p>
 

@@ -1,13 +1,17 @@
+import { getTranslations } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
 
-function formatCount(n: number): string {
-  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}亿`;
-  if (n >= 10_000) return `${(n / 10_000).toFixed(1)}万`;
+/** 多语言数字格式化 */
+function formatCount(n: number, t: (key: string) => string): string {
+  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}${t('billion')}`;
+  if (n >= 10_000) return `${(n / 10_000).toFixed(1)}${t('tenThousand')}`;
   if (n >= 1_000) return n.toLocaleString();
   return String(n);
 }
 
 export default async function StatsBar() {
+  const t = await getTranslations('Stats');
+
   const [checkCount, watchCount, userCount] = await Promise.all([
     prisma.checkRecord.count(),
     prisma.watchItem.count(),
@@ -15,9 +19,9 @@ export default async function StatsBar() {
   ]);
 
   const stats = [
-    { label: '累计查询', value: formatCount(checkCount), suffix: '次' },
-    { label: '监控中', value: formatCount(watchCount), suffix: '个对象' },
-    { label: '注册用户', value: formatCount(userCount), suffix: '人' },
+    { label: t('checks'), value: formatCount(checkCount, t), suffix: t('checksSuffix') },
+    { label: t('watching'), value: formatCount(watchCount, t), suffix: t('watchingSuffix') },
+    { label: t('users'), value: formatCount(userCount, t), suffix: t('usersSuffix') },
   ];
 
   return (

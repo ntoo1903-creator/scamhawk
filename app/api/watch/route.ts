@@ -3,6 +3,8 @@ import { classifyEntity } from '@/lib/validation';
 import { lookupEntity } from '@/lib/chainabuse';
 import { prisma } from '@/lib/prisma';
 import { getClerkUserId } from '@/lib/auth';
+import { canAddWatch } from '@/lib/rate-limit';
+import { hasProAccess } from '@/lib/paddle';
 
 export const runtime = 'nodejs';
 
@@ -19,6 +21,22 @@ export async function POST(req: NextRequest) {
 
   if (!entity.valid) {
     return NextResponse.json({ error: 'INVALID_INPUT' }, { status: 400 });
+  }
+
+  // 检查免费版用户监控数量限制
+  const isPro = await hasProAccess(clerkId);
+  if (!isPro) {
+    const watchLimit = await canAddWatch(clerkId);
+    if (!watchLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'WATCH_LIMIT_EXCEEDED',
+          limit: watchLimit.limit,
+          current: watchLimit.current,
+        },
+        { status: 429 },
+      );
+    }
   }
 
   const result = await lookupEntity(entity.value, entity.type);

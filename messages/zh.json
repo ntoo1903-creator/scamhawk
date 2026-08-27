@@ -20,7 +20,10 @@
     "invalidInput": "无法识别：请输入有效的钱包地址或网址。",
     "networkError": "查询失败，请稍后重试。",
     "mockNotice": "演示模式：尚未配置 Chainabuse API Key，以下为模拟结果，请勿作为安全依据。",
-    "shareTitle": "风险查询结果"
+    "shareTitle": "风险查询结果",
+    "dailyLimitExceeded": "今日免费查询次数已用完，请升级到专业版或明天再试。",
+    "dailyUsage": "今日已用 {used}/{limit} 次",
+    "usageWarning": "即将用完"
   },
   "Risk": {
     "SAFE": "安全",
@@ -40,6 +43,7 @@
     "signInToWatch": "登录后可监控该对象",
     "watchAdded": "已加入监控列表",
     "watchError": "加入监控失败，请稍后重试",
+    "watchLimitExceeded": "免费版最多监控 5 个对象，请升级到专业版",
     "share": "分享",
     "shareCopied": "已复制",
     "shareText": "在 ScamHawk 上查看此对象的风险报告"
@@ -91,7 +95,9 @@
     "filterSearch": "搜索地址或类别…",
     "filterClear": "清除筛选",
     "filterResultCount": "显示 {filtered}/{total} 项",
-    "filterEmpty": "没有匹配的监控项"
+    "filterEmpty": "没有匹配的监控项",
+    "watchUsage": "监控中 {current}/{limit} 个",
+    "watchLimitWarning": "即将达到上限"
   },
   "Features": {
     "sectionTitle": "为什么选择 ScamHawk",
@@ -115,5 +121,15 @@
   "Footer": {
     "tagline": "让每一笔交易都更安全",
     "disclaimer": "查询结果仅供参考，不构成任何投资或安全建议。"
+  },
+  "Stats": {
+    "checks": "累计查询",
+    "checksSuffix": "次",
+    "watching": "监控中",
+    "watchingSuffix": "个对象",
+    "users": "注册用户",
+    "usersSuffix": "人",
+    "billion": "亿",
+    "tenThousand": "万"
   }
 }

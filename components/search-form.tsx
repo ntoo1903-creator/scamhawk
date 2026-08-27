@@ -2,9 +2,15 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { SearchIcon, Loader2Icon } from 'lucide-react';
+import { SearchIcon, Loader2Icon, AlertCircleIcon } from 'lucide-react';
 import type { LookupResult } from '@/lib/types';
 import ResultCard from './result-card';
+
+interface UsageInfo {
+  used: number;
+  limit: number;
+  remaining: number;
+}
 
 type FormState = 'idle' | 'loading' | 'error';
 
@@ -14,6 +20,7 @@ export default function SearchForm() {
   const [state, setState] = useState<FormState>('idle');
   const [result, setResult] = useState<LookupResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [usage, setUsage] = useState<UsageInfo | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,12 +45,23 @@ export default function SearchForm() {
 
       if (!res.ok) {
         setState('error');
-        setErrorMsg(data.error === 'INVALID_INPUT' ? t('invalidInput') : t('networkError'));
+        if (data.error === 'INVALID_INPUT') {
+          setErrorMsg(t('invalidInput'));
+        } else if (data.error === 'DAILY_LIMIT_EXCEEDED') {
+          setErrorMsg(t('dailyLimitExceeded'));
+        } else {
+          setErrorMsg(t('networkError'));
+        }
         return;
       }
 
       setResult(data.result as LookupResult);
       setState('idle');
+
+      // 更新使用量显示
+      if (data.usage) {
+        setUsage(data.usage);
+      }
     } catch {
       setState('error');
       setErrorMsg(t('networkError'));
@@ -74,6 +92,19 @@ export default function SearchForm() {
           {state === 'loading' ? t('checking') : t('searchButton')}
         </button>
       </form>
+
+      {/* 免费版使用量提示 */}
+      {usage && (
+        <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
+          <span>{t('dailyUsage', { used: usage.used, limit: usage.limit })}</span>
+          {usage.remaining <= 2 && usage.remaining > 0 && (
+            <span className="flex items-center gap-1 text-amber-600">
+              <AlertCircleIcon className="h-3 w-3" />
+              {t('usageWarning')}
+            </span>
+          )}
+        </div>
+      )}
 
       {state === 'error' && (
         <p className="mt-3 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-700">

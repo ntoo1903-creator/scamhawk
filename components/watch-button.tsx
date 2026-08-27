@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
-import { BellPlusIcon, BellRingIcon } from 'lucide-react';
+import { BellPlusIcon, BellRingIcon, AlertCircleIcon } from 'lucide-react';
 import type { EntityType } from '@/lib/types';
 
 const clerkConfigured = Boolean(
@@ -37,7 +37,7 @@ function WatchButtonInner({
   const { isSignedIn } = useAuth();
   const [watching, setWatching] = useState(false);
   const [done, setDone] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<false | 'generic' | 'limit'>(false);
 
   if (!isSignedIn) {
     return (
@@ -57,10 +57,18 @@ function WatchButtonInner({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value, type }),
       });
-      if (!res.ok) throw new Error('watch failed');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.error === 'WATCH_LIMIT_EXCEEDED') {
+          setError('limit');
+        } else {
+          setError('generic');
+        }
+        return;
+      }
       setDone(true);
     } catch {
-      setError(true);
+      setError('generic');
     } finally {
       setWatching(false);
     }
@@ -82,7 +90,13 @@ function WatchButtonInner({
         {done ? t('watching') : t('addToWatch')}
       </button>
       {done && <span className="text-xs text-emerald-600">{t('watchAdded')}</span>}
-      {error && <span className="text-xs text-red-600">{t('watchError')}</span>}
+      {error === 'limit' && (
+        <span className="flex items-center gap-1 text-xs text-amber-600">
+          <AlertCircleIcon className="h-3.5 w-3.5" />
+          {t('watchLimitExceeded')}
+        </span>
+      )}
+      {error === 'generic' && <span className="text-xs text-red-600">{t('watchError')}</span>}
     </div>
   );
 }
