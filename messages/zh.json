@@ -8,7 +8,8 @@
     "pricing": "价格",
     "dashboard": "监控台",
     "history": "历史记录",
-    "signIn": "登录"
+    "signIn": "登录",
+    "settings": "设置"
   },
   "Home": {
     "heroTitle": "查一查，再交易",
@@ -154,5 +155,34 @@
     "filterClear": "清除筛选",
     "filterResultCount": "显示 {filtered}/{total} 条",
     "filterEmpty": "没有匹配的记录"
+  },
+  "Settings": {
+    "title": "账户设置",
+    "subtitle": "管理你的账户信息和订阅状态。",
+    "notConfigured": "尚未配置 Clerk 环境变量，登录功能不可用。",
+    "account": "账户信息",
+    "userId": "用户 ID",
+    "createdAt": "注册时间",
+    "subscription": "订阅状态",
+    "plan": "当前方案",
+    "status": "状态",
+    "nextBilling": "下次扣款",
+    "cancelAtPeriodEnd": "订阅将在当前周期结束后取消，届时将降级为免费版。",
+    "noSubscription": "当前没有有效订阅",
+    "upgradeToPro": "升级到专业版",
+    "checkoutNotConfigured": "支付通道（Paddle）尚未配置，订阅功能不可用。",
+    "statusActive": "生效中",
+    "statusTrialing": "试用中",
+    "statusPastDue": "逾期未付",
+    "statusPaused": "已暂停",
+    "statusCanceled": "已取消",
+    "planPro": "专业版",
+    "planFree": "免费版",
+    "usage": "使用统计",
+    "totalChecks": "累计查询",
+    "watchItems": "监控对象",
+    "freeLimits": "免费版限制",
+    "freeCheckLimit": "每日最多 {limit} 次查询",
+    "freeWatchLimit": "最多监控 {limit} 个对象"
   }
 }

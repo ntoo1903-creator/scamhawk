@@ -8,7 +8,8 @@
     "pricing": "Pricing",
     "dashboard": "Dashboard",
     "history": "History",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "settings": "Settings"
   },
   "Home": {
     "heroTitle": "Check before you trade",
@@ -154,5 +155,34 @@
     "filterClear": "Clear filters",
     "filterResultCount": "Showing {filtered}/{total} records",
     "filterEmpty": "No matching records"
+  },
+  "Settings": {
+    "title": "Account Settings",
+    "subtitle": "Manage your account information and subscription status.",
+    "notConfigured": "Clerk env vars are missing, sign-in is unavailable.",
+    "account": "Account Info",
+    "userId": "User ID",
+    "createdAt": "Registered",
+    "subscription": "Subscription",
+    "plan": "Current plan",
+    "status": "Status",
+    "nextBilling": "Next billing",
+    "cancelAtPeriodEnd": "Your subscription will be canceled at the end of the current period and downgrade to Free.",
+    "noSubscription": "No active subscription",
+    "upgradeToPro": "Upgrade to Pro",
+    "checkoutNotConfigured": "Payments (Paddle) are not configured yet. Subscription is unavailable.",
+    "statusActive": "Active",
+    "statusTrialing": "Trialing",
+    "statusPastDue": "Past due",
+    "statusPaused": "Paused",
+    "statusCanceled": "Canceled",
+    "planPro": "Pro",
+    "planFree": "Free",
+    "usage": "Usage Stats",
+    "totalChecks": "Total checks",
+    "watchItems": "Watched items",
+    "freeLimits": "Free plan limits",
+    "freeCheckLimit": "{limit} checks per day",
+    "freeWatchLimit": "{limit} items max"
   }
 }

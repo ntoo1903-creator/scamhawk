@@ -37,6 +37,7 @@ export default function MobileMenu() {
     { href: '/pricing', label: t('pricing') },
     { href: '/dashboard', label: t('dashboard') },
     { href: '/history', label: t('history') },
+    { href: '/settings', label: t('settings') },
   ];
 
   return (

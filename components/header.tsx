@@ -42,6 +42,9 @@ export default async function Header() {
           <Link href="/history" className="transition hover:text-gray-900">
             {t('history')}
           </Link>
+          <Link href="/settings" className="transition hover:text-gray-900">
+            {t('settings')}
+          </Link>
         </nav>
 
         {/* Right side: mobile menu + locale + user */}
