@@ -82,7 +82,12 @@
     "totalWatched": "Watching",
     "highRisk": "High risk",
     "suspicious": "Suspicious",
-    "columnCategories": "Categories"
+    "columnCategories": "Categories",
+    "filterAll": "All",
+    "filterSearch": "Search address or category…",
+    "filterClear": "Clear filters",
+    "filterResultCount": "Showing {filtered}/{total} items",
+    "filterEmpty": "No matching items"
   },
   "Features": {
     "sectionTitle": "Why ScamHawk",
