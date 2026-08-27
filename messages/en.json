@@ -19,7 +19,8 @@
     "emptyInput": "Please enter a wallet address or URL.",
     "invalidInput": "Unrecognized input: enter a valid wallet address or URL.",
     "networkError": "Check failed, please try again later.",
-    "mockNotice": "Demo mode: no Chainabuse API key configured. The result below is simulated and must not be used as a security basis."
+    "mockNotice": "Demo mode: no Chainabuse API key configured. The result below is simulated and must not be used as a security basis.",
+    "shareTitle": "Risk Check Result"
   },
   "Risk": {
     "SAFE": "Safe",
@@ -38,7 +39,10 @@
     "watching": "Watching",
     "signInToWatch": "Sign in to watch this entity",
     "watchAdded": "Added to your watchlist",
-    "watchError": "Failed to add to watchlist, try again later"
+    "watchError": "Failed to add to watchlist, try again later",
+    "share": "Share",
+    "shareCopied": "Copied!",
+    "shareText": "Check this entity's risk report on ScamHawk"
   },
   "Pricing": {
     "title": "Choose your plan",

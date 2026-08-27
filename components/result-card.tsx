@@ -5,6 +5,7 @@ import { ShieldAlertIcon, AlertTriangleIcon, FileWarningIcon } from 'lucide-reac
 import type { LookupResult } from '@/lib/types';
 import RiskBadge from './risk-badge';
 import WatchButton from './watch-button';
+import ShareButton from './share-button';
 
 export default function ResultCard({ result }: { result: LookupResult }) {
   const t = useTranslations('Risk');
@@ -72,7 +73,10 @@ export default function ResultCard({ result }: { result: LookupResult }) {
         </p>
       )}
 
-      <WatchButton value={result.value} type={result.type} />
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <WatchButton value={result.value} type={result.type} />
+        <ShareButton value={result.value} type={result.type} />
+      </div>
     </div>
   );
 }
