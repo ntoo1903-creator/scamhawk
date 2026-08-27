@@ -1,5 +1,6 @@
 import { Paddle, Environment } from '@paddle/paddle-node-sdk';
 import { prisma } from '@/lib/prisma';
+import { cached, cacheKeys, cacheTTL } from './cache';
 
 let paddleClient: Paddle | null = null;
 
@@ -42,19 +43,24 @@ export function isActiveSubscriptionStatus(status: string): boolean {
 /**
  * 查询用户当前有效的专业版订阅（active / trialing）。
  * 多个订阅并存时取最近更新的一个。
+ * 使用缓存加速（5 分钟 TTL）。
  */
 export async function getActiveSubscription(clerkId: string) {
-  const user = await prisma.user.findUnique({
-    where: { clerkId },
-    include: {
-      subscriptions: {
-        orderBy: { updatedAt: 'desc' },
+  const cacheKey = cacheKeys.subscription(clerkId);
+
+  return cached(cacheKey, async () => {
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      include: {
+        subscriptions: {
+          orderBy: { updatedAt: 'desc' },
+        },
       },
-    },
-  });
-  return (
-    user?.subscriptions.find((s) => isActiveSubscriptionStatus(s.status)) ?? null
-  );
+    });
+    return (
+      user?.subscriptions.find((s) => isActiveSubscriptionStatus(s.status)) ?? null
+    );
+  }, cacheTTL.subscription);
 }
 
 /** 用户当前是否为专业版（用于价格页「当前方案」展示与后续权益判断） */

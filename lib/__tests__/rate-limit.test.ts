@@ -18,6 +18,23 @@ vi.mock('@/lib/prisma', () => ({
   prisma: mockPrisma,
 }));
 
+// Mock cache to bypass caching in tests (passthrough)
+vi.mock('@/lib/cache', () => ({
+  cached: vi.fn((_key: string, fetcher: () => Promise<unknown>, _ttl: number) => fetcher()),
+  cacheKeys: {
+    check: (value: string, type: string) => `check:${type}:${value}`,
+    subscription: (clerkId: string) => `sub:${clerkId}`,
+    watchCount: (clerkId: string) => `watch:count:${clerkId}`,
+    checkCount: (clerkId: string, date: string) => `check:count:${clerkId}:${date}`,
+  },
+  cacheTTL: {
+    check: 3600,
+    subscription: 300,
+    watchCount: 60,
+    checkCount: 300,
+  },
+}));
+
 // Import after mocking
 const { canCheck, canAddWatch } = await import('../rate-limit');
 

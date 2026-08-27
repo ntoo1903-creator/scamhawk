@@ -1,4 +1,5 @@
 import type { EntityType, LookupResult, RiskLevel } from './types';
+import { cached, cacheKeys, cacheTTL } from './cache';
 
 const CHAINABUSE_API = 'https://api.chainabuse.com/v0/reports';
 
@@ -92,7 +93,7 @@ async function lookupFromChainabuse(
       accept: 'application/json',
       'X-API-Key': API_KEY,
     },
-    next: { revalidate: 3600 },
+    next: { revalidate: cacheTTL.check },
   });
 
   if (!res.ok) {
@@ -176,13 +177,18 @@ function lookupFromMock(value: string, type: EntityType): LookupResult {
  * - 已配置 CHAINABUSE_API_KEY：走真实 API；失败时抛出异常
  *   （安全查询不允许静默降级为模拟数据，调用方应返回 502）。
  * - 未配置 Key：返回明确标注的演示数据（isMock: true）。
+ * - 使用缓存加速重复查询（1 小时 TTL）。
  */
 export async function lookupEntity(
   value: string,
   type: EntityType,
 ): Promise<LookupResult> {
-  if (API_KEY) {
-    return lookupFromChainabuse(value, type);
+  // 演示模式不缓存（确定性模拟数据，无需缓存）
+  if (!API_KEY) {
+    return lookupFromMock(value, type);
   }
-  return lookupFromMock(value, type);
+
+  // 真实 API 查询使用缓存
+  const cacheKey = cacheKeys.check(value, type);
+  return cached(cacheKey, () => lookupFromChainabuse(value, type), cacheTTL.check);
 }

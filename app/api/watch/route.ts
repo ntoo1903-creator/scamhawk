@@ -6,6 +6,7 @@ import { getClerkUserId } from '@/lib/auth';
 import { canAddWatch } from '@/lib/rate-limit';
 import { hasProAccess } from '@/lib/paddle';
 import { watchRatelimit, getClientIp, checkRateLimit } from '@/lib/upstash';
+import { invalidateCache, cacheKeys } from '@/lib/cache';
 
 export const runtime = 'nodejs';
 
@@ -98,6 +99,9 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // 使监控数量缓存失效
+  await invalidateCache(cacheKeys.watchCount(clerkId));
+
   return NextResponse.json({ item }, { status: 201 });
 }
 
@@ -139,6 +143,9 @@ export async function DELETE(req: NextRequest) {
   await prisma.watchItem.deleteMany({
     where: { value, user: { clerkId } },
   });
+
+  // 使监控数量缓存失效
+  await invalidateCache(cacheKeys.watchCount(clerkId));
 
   return NextResponse.json({ ok: true });
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { getPaddleClient, isPaddleConfigured } from '@/lib/paddle';
+import { invalidateCache, cacheKeys } from '@/lib/cache';
 
 export const runtime = 'nodejs';
 
@@ -149,6 +150,8 @@ async function handleSubscriptionEvent(eventType: string, data: PaddleSubscripti
       where: { id: existing.id },
       data: mapSubscriptionData(sub),
     });
+    // 使订阅缓存失效
+    await invalidateCache(cacheKeys.subscription(existing.userId));
     return { applied: true, note: `updated existing subscription (${eventType})` };
   }
 
@@ -181,6 +184,10 @@ async function handleSubscriptionEvent(eventType: string, data: PaddleSubscripti
       ...mapSubscriptionData(sub),
     },
   });
+
+  // 使订阅缓存失效
+  await invalidateCache(cacheKeys.subscription(user.id));
+
   return { applied: true, note: `created subscription for user ${userId} (${eventType})` };
 }
 

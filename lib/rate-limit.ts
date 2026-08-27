@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { cached, cacheKeys, cacheTTL } from './cache';
 
 // 免费版限制配置
 export const FREE_TIER_LIMITS = {
@@ -11,25 +12,28 @@ export const FREE_TIER_LIMITS = {
 /**
  * 获取用户今日已使用的查询次数。
  * 未登录用户返回 0（不追踪，前端也不展示）。
+ * 使用缓存加速（5 分钟 TTL）。
  */
 export async function getDailyCheckCount(clerkId: string): Promise<number> {
-  const user = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true },
-  });
-  if (!user) return 0;
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const dateStr = today.toISOString().split('T')[0];
+  const cacheKey = cacheKeys.checkCount(clerkId, dateStr);
 
-  const count = await prisma.checkRecord.count({
-    where: {
-      userId: user.id,
-      createdAt: { gte: today },
-    },
-  });
+  return cached(cacheKey, async () => {
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    });
+    if (!user) return 0;
 
-  return count;
+    return prisma.checkRecord.count({
+      where: {
+        userId: user.id,
+        createdAt: { gte: today },
+      },
+    });
+  }, cacheTTL.checkCount);
 }
 
 /**
@@ -59,17 +63,22 @@ export async function incrementDailyCheckCount(clerkId: string): Promise<number>
 
 /**
  * 获取用户当前监控数量。
+ * 使用缓存加速（1 分钟 TTL）。
  */
 export async function getWatchItemCount(clerkId: string): Promise<number> {
-  const user = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true },
-  });
-  if (!user) return 0;
+  const cacheKey = cacheKeys.watchCount(clerkId);
 
-  return prisma.watchItem.count({
-    where: { userId: user.id },
-  });
+  return cached(cacheKey, async () => {
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+      select: { id: true },
+    });
+    if (!user) return 0;
+
+    return prisma.watchItem.count({
+      where: { userId: user.id },
+    });
+  }, cacheTTL.watchCount);
 }
 
 /**
