@@ -24,7 +24,8 @@
     "shareTitle": "风险查询结果",
     "dailyLimitExceeded": "今日免费查询次数已用完，请升级到专业版或明天再试。",
     "dailyUsage": "今日已用 {used}/{limit} 次",
-    "usageWarning": "即将用完"
+    "usageWarning": "即将用完",
+    "rateLimitExceeded": "请求过于频繁，请稍后再试。"
   },
   "Risk": {
     "SAFE": "安全",

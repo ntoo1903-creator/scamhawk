@@ -49,6 +49,8 @@ export default function SearchForm() {
           setErrorMsg(t('invalidInput'));
         } else if (data.error === 'DAILY_LIMIT_EXCEEDED') {
           setErrorMsg(t('dailyLimitExceeded'));
+        } else if (data.error === 'RATE_LIMIT_EXCEEDED') {
+          setErrorMsg(t('rateLimitExceeded'));
         } else {
           setErrorMsg(t('networkError'));
         }

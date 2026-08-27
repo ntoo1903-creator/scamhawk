@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { getClerkUserId } from '@/lib/auth';
 import { canCheck, incrementDailyCheckCount } from '@/lib/rate-limit';
 import { hasProAccess } from '@/lib/paddle';
+import { checkRatelimit, getClientIp, checkRateLimit } from '@/lib/upstash';
 
 export const runtime = 'nodejs';
 
@@ -13,9 +14,31 @@ export const runtime = 'nodejs';
  * body: { value: string } —— 钱包地址或网址
  *
  * 返回归一化的查询结果；登录用户会额外写入查询历史。
- * 免费版用户每日限制 10 次查询，专业版用户无限制。
+ * - IP 限流：每 24 小时最多 30 次（Upstash）
+ * - 免费版用户每日限制 10 次查询，专业版用户无限制
  */
 export async function POST(req: NextRequest) {
+  // IP 级别限流（防刷）
+  const ip = getClientIp(req);
+  const ipLimit = await checkRateLimit(checkRatelimit, ip);
+  if (!ipLimit.success) {
+    return NextResponse.json(
+      {
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
+        reset: ipLimit.reset,
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': '30',
+          'X-RateLimit-Remaining': String(ipLimit.remaining),
+          'X-RateLimit-Reset': String(ipLimit.reset),
+        },
+      },
+    );
+  }
+
   const body = await req.json().catch(() => null);
   const raw = typeof body?.value === 'string' ? body.value : '';
 

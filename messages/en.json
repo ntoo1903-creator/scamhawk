@@ -24,7 +24,8 @@
     "shareTitle": "Risk Check Result",
     "dailyLimitExceeded": "You've reached your daily free check limit. Upgrade to Pro or try again tomorrow.",
     "dailyUsage": "{used}/{limit} checks used today",
-    "usageWarning": "Running low"
+    "usageWarning": "Running low",
+    "rateLimitExceeded": "Too many requests. Please try again later."
   },
   "Risk": {
     "SAFE": "Safe",

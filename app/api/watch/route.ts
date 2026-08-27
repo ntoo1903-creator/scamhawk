@@ -5,11 +5,33 @@ import { prisma } from '@/lib/prisma';
 import { getClerkUserId } from '@/lib/auth';
 import { canAddWatch } from '@/lib/rate-limit';
 import { hasProAccess } from '@/lib/paddle';
+import { watchRatelimit, getClientIp, checkRateLimit } from '@/lib/upstash';
 
 export const runtime = 'nodejs';
 
 /** 添加监控项（登录用户） */
 export async function POST(req: NextRequest) {
+  // IP 级别限流（防刷）
+  const ip = getClientIp(req);
+  const ipLimit = await checkRateLimit(watchRatelimit, ip);
+  if (!ipLimit.success) {
+    return NextResponse.json(
+      {
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
+        reset: ipLimit.reset,
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': String(ipLimit.remaining),
+          'X-RateLimit-Reset': String(ipLimit.reset),
+        },
+      },
+    );
+  }
+
   const clerkId = await getClerkUserId();
   if (!clerkId) {
     return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
@@ -81,6 +103,27 @@ export async function POST(req: NextRequest) {
 
 /** 移除监控项（登录用户） */
 export async function DELETE(req: NextRequest) {
+  // IP 级别限流（防刷）
+  const ip = getClientIp(req);
+  const ipLimit = await checkRateLimit(watchRatelimit, ip);
+  if (!ipLimit.success) {
+    return NextResponse.json(
+      {
+        error: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
+        reset: ipLimit.reset,
+      },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': '10',
+          'X-RateLimit-Remaining': String(ipLimit.remaining),
+          'X-RateLimit-Reset': String(ipLimit.reset),
+        },
+      },
+    );
+  }
+
   const clerkId = await getClerkUserId();
   if (!clerkId) {
     return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
