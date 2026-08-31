@@ -12,7 +12,12 @@ export default function SharedCheckPage() {
   const t = useTranslations('Home');
 
   const rawValue = Array.isArray(params.value) ? params.value[0] : params.value;
-  const value = decodeURIComponent(rawValue ?? '');
+  let value = '';
+  try {
+    value = decodeURIComponent(rawValue ?? '');
+  } catch {
+    value = '';
+  }
 
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   const [result, setResult] = useState<LookupResult | null>(null);

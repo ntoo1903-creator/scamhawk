@@ -1,25 +1,20 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useLocale } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useAuth, useUser, SignInButton } from '@clerk/nextjs';
 import { Loader2Icon, ShieldCheckIcon } from 'lucide-react';
 
 const clerkConfigured = Boolean(
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim(),
 );
-
 const PADDLE_JS_SRC = 'https://cdn.paddle.com/paddle/v2/paddle.js';
 
 declare global {
   interface Window {
     Paddle?: {
-      Initialize: (opts: {
-        token: string;
-        environment?: string;
-      }) => Promise<void> | void;
+      Initialize: (opts: { token: string; environment?: string }) => Promise<void> | void;
       Checkout: {
         open: (opts: object) => void;
         on: (event: string, cb: (evt: unknown) => void) => void;
@@ -30,7 +25,6 @@ declare global {
 
 let paddleJsPromise: Promise<void> | null = null;
 
-/** 动态加载 Paddle.js（全局只加载一次） */
 function loadPaddleJs(): Promise<void> {
   if (paddleJsPromise) return paddleJsPromise;
   if (typeof window !== 'undefined' && window.Paddle) {
@@ -58,13 +52,17 @@ interface CheckoutConfig {
   priceId?: string;
 }
 
-type ButtonState =
-  | 'loading' // 拉取下单配置中
-  | 'not-configured' // Paddle 未配置
-  | 'signed-out' // 未登录
-  | 'ready'
-  | 'opening'
-  | 'done'; // 订阅成功
+type ButtonState = 'loading' | 'not-configured' | 'signed-out' | 'ready' | 'opening' | 'done';
+
+interface CommonProps {
+  ctaLabel: string;
+  configureNote: string;
+  signInNote: string;
+  openingLabel: string;
+  doneLabel: string;
+  alreadySubscribed: boolean;
+  className: string;
+}
 
 export default function SubscribeButton({
   ctaLabel,
@@ -74,23 +72,63 @@ export default function SubscribeButton({
   doneLabel,
   alreadySubscribed = false,
   className,
-}: {
-  ctaLabel: string;
-  configureNote: string;
-  signInNote: string;
-  openingLabel: string;
-  doneLabel: string;
-  alreadySubscribed?: boolean;
-  className: string;
-}) {
+}: Omit<CommonProps, 'alreadySubscribed'> & { alreadySubscribed?: boolean }) {
   const t = useTranslations('Pricing');
   const locale = useLocale();
   const router = useRouter();
+
+  // 重要：不能在此组件中无条件调用 Clerk hooks，因为本地/未配置环境不会挂载 ClerkProvider。
+  if (!clerkConfigured) {
+    return (
+      <div className="mt-8">
+        <button
+          type="button"
+          disabled
+          title={configureNote}
+          className={`${className} cursor-not-allowed opacity-50`}
+        >
+          {ctaLabel}
+        </button>
+        <p className="mt-2 text-xs text-gray-400">{configureNote}</p>
+      </div>
+    );
+  }
+
+  return (
+    <ClerkCheckoutButton
+      ctaLabel={ctaLabel}
+      configureNote={configureNote}
+      signInNote={signInNote}
+      openingLabel={openingLabel}
+      doneLabel={doneLabel}
+      alreadySubscribed={alreadySubscribed}
+      className={className}
+      t={t}
+      locale={locale}
+      router={router}
+    />
+  );
+}
+
+function ClerkCheckoutButton({
+  ctaLabel,
+  configureNote,
+  signInNote,
+  openingLabel,
+  doneLabel,
+  alreadySubscribed,
+  className,
+  t,
+  locale,
+  router,
+}: CommonProps & {
+  t: (key: string) => string;
+  locale: string;
+  router: ReturnType<typeof useRouter>;
+}) {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const [state, setState] = useState<ButtonState>(
-    alreadySubscribed ? 'done' : 'loading',
-  );
+  const [state, setState] = useState<ButtonState>(alreadySubscribed ? 'done' : 'loading');
   const [error, setError] = useState(false);
   const configRef = useRef<CheckoutConfig | null>(null);
   const listenerRegistered = useRef(false);
@@ -111,14 +149,7 @@ export default function SubscribeButton({
   }, []);
 
   useEffect(() => {
-    // 服务端已确认订阅有效：无需拉取下单配置
     if (alreadySubscribed) return;
-    // Clerk 未配置：直接取下单配置
-    if (!clerkConfigured) {
-      fetchConfig();
-      return;
-    }
-    // Clerk 会话加载中
     if (isSignedIn === undefined) return;
     if (isSignedIn === false) {
       setState('signed-out');
@@ -138,12 +169,8 @@ export default function SubscribeButton({
       const paddle = window.Paddle;
       if (!paddle) throw new Error('Paddle not loaded');
 
-      await paddle.Initialize({
-        token: config.clientToken,
-        environment: config.environment,
-      });
+      await paddle.Initialize({ token: config.clientToken, environment: config.environment });
 
-      // 订阅成功回调（只注册一次）
       if (!listenerRegistered.current) {
         paddle.Checkout.on('checkout.completed', () => {
           setState('done');
@@ -154,10 +181,7 @@ export default function SubscribeButton({
 
       paddle.Checkout.open({
         items: [{ priceId: config.priceId, quantity: 1 }],
-        customData: {
-          // Paddle 要求键为小写字母/数字/下划线；webhook 用它绑定用户
-          user_id: user?.id ?? '',
-        },
+        customData: { user_id: user?.id ?? '' },
         customer: user?.primaryEmailAddress
           ? { email: user.primaryEmailAddress.emailAddress }
           : undefined,
@@ -174,22 +198,14 @@ export default function SubscribeButton({
     }
   }
 
-  const disabled =
-    state === 'loading' ||
-    state === 'not-configured' ||
-    state === 'opening' ||
-    state === 'done';
-
+  const disabled = ['loading', 'not-configured', 'opening', 'done'].includes(state);
   const btnCls = `${className} disabled:cursor-not-allowed disabled:opacity-50`;
 
-  // 未登录：点击后弹 Clerk 登录
-  if (clerkConfigured && state === 'signed-out') {
+  if (state === 'signed-out') {
     return (
       <div className="mt-8">
         <SignInButton mode="modal">
-          <button type="button" className={btnCls} title={signInNote}>
-            {ctaLabel}
-          </button>
+          <button type="button" className={btnCls} title={signInNote}>{ctaLabel}</button>
         </SignInButton>
         <p className="mt-2 text-xs text-gray-400">{signInNote}</p>
       </div>
@@ -198,33 +214,14 @@ export default function SubscribeButton({
 
   return (
     <div className="mt-8">
-      <button
-        type="button"
-        disabled={disabled}
-        title={state === 'not-configured' ? configureNote : undefined}
-        onClick={handleCheckout}
-        className={btnCls}
-      >
+      <button type="button" disabled={disabled} title={state === 'not-configured' ? configureNote : undefined} onClick={handleCheckout} className={btnCls}>
         {state === 'loading' || state === 'opening' ? (
-          <>
-            <Loader2Icon className="h-4 w-4 animate-spin" />
-            {state === 'opening' ? openingLabel : ctaLabel}
-          </>
+          <><Loader2Icon className="h-4 w-4 animate-spin" />{state === 'opening' ? openingLabel : ctaLabel}</>
         ) : state === 'done' ? (
-          <>
-            <ShieldCheckIcon className="h-4 w-4" />
-            {doneLabel}
-          </>
-        ) : (
-          ctaLabel
-        )}
+          <><ShieldCheckIcon className="h-4 w-4" />{doneLabel}</>
+        ) : ctaLabel}
       </button>
-      {state === 'done' && (
-        <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600">
-          <ShieldCheckIcon className="h-3.5 w-3.5" />
-          {t('subscriptionActive')}
-        </p>
-      )}
+      {state === 'done' && <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-600"><ShieldCheckIcon className="h-3.5 w-3.5" />{t('subscriptionActive')}</p>}
       {error && <p className="mt-2 text-xs text-red-600">{t('checkoutError')}</p>}
     </div>
   );

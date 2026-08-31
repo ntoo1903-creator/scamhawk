@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { classifyEntity } from '@/lib/validation';
 import { lookupEntity } from '@/lib/chainabuse';
 import { prisma } from '@/lib/prisma';
-import { getClerkUserId } from '@/lib/auth';
+import { ensureLocalUser, getClerkUserId } from '@/lib/auth';
 import { canAddWatch } from '@/lib/rate-limit';
 import { hasProAccess } from '@/lib/paddle';
 import { watchRatelimit, getClientIp, checkRateLimit } from '@/lib/upstash';
@@ -64,11 +64,7 @@ export async function POST(req: NextRequest) {
 
   const result = await lookupEntity(entity.value, entity.type);
 
-  const user = await prisma.user.upsert({
-    where: { clerkId },
-    update: {},
-    create: { clerkId },
-  });
+  const user = await ensureLocalUser(clerkId);
 
   const item = await prisma.watchItem.upsert({
     where: {
@@ -134,14 +130,19 @@ export async function DELETE(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const value = typeof body?.value === 'string' ? body.value.trim() : '';
+  const raw = typeof body?.value === 'string' ? body.value : '';
+  const entity = classifyEntity(raw);
 
-  if (!value) {
+  if (!entity.valid) {
     return NextResponse.json({ error: 'INVALID_INPUT' }, { status: 400 });
   }
 
   await prisma.watchItem.deleteMany({
-    where: { value, user: { clerkId } },
+    where: {
+      type: entity.type,
+      value: entity.value,
+      user: { clerkId },
+    },
   });
 
   // 使监控数量缓存失效

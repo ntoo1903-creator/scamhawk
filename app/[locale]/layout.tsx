@@ -47,7 +47,7 @@ export default async function LocaleLayout({
         <StructuredData />
       </head>
       <body className="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased">
-        {/* 未配置 Clerk 环境变量时跳过 Provider，保证本地可直接运行 */}
+        {/* Clerk 配置完整时挂载 Provider；否则保持访客模式 */}
         {isClerkConfigured() ? <ClerkProvider>{app}</ClerkProvider> : app}
       </body>
     </html>

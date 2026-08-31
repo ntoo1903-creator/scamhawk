@@ -116,7 +116,7 @@ scamhawk/
 4. 部署完成
 
 Vercel 会自动处理：
-- 每 6 小时调用 `/api/cron/watch` 复查监控项
+- 每 6 小时调用 `/api/cron/watch` 复查监控项（需要配置 `CRON_SECRET`）
 - 自动 HTTPS 和 CDN
 
 ## License

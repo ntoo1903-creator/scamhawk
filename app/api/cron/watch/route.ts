@@ -6,7 +6,8 @@ import { isEmailConfigured, sendRiskChangeEmail } from '@/lib/email';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000; // 与 vercel.json 中的 cron 频率一致（每天一次）
+const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000; // 与 vercel.json 中的 cron 频率一致（每 6 小时）
+const RETRY_INTERVAL_MS = 60 * 60 * 1000; // 查询失败后 1 小时重试
 const BATCH_SIZE = 50;
 
 /**
@@ -69,6 +70,15 @@ export async function GET(req: NextRequest) {
       }
     } catch (err) {
       console.error(`[cron] recheck failed for ${item.value}:`, err);
+      // 暂时推迟失败项，避免下次 Cron 继续反复扫描同一批失败项目。
+      await prisma.watchItem
+        .update({
+          where: { id: item.id },
+          data: { nextCheckAt: new Date(Date.now() + RETRY_INTERVAL_MS) },
+        })
+        .catch((updateErr) => {
+          console.error(`[cron] failed to schedule retry for ${item.value}:`, updateErr);
+        });
     }
   }
 

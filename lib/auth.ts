@@ -1,4 +1,5 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { prisma } from '@/lib/prisma';
 
 /** Clerk 是否已配置环境变量（未配置时 auth() 不可用，全站降级为游客模式） */
 export function isClerkConfigured(): boolean {
@@ -21,4 +22,24 @@ export async function getClerkUserId(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * 确保本地用户存在并同步 Clerk 主邮箱。
+ * 同步失败不应阻断查询等主流程，调用方可继续使用 clerkId。
+ */
+export async function ensureLocalUser(clerkId: string) {
+  let email: string | null = null;
+  try {
+    const user = await currentUser();
+    email = user?.primaryEmailAddress?.emailAddress ?? null;
+  } catch (error) {
+    console.error('[auth] failed to load Clerk user:', error);
+  }
+
+  return prisma.user.upsert({
+    where: { clerkId },
+    update: email ? { email } : {},
+    create: { clerkId, email },
+  });
 }

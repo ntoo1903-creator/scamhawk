@@ -2,12 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { classifyEntity } from '@/lib/validation';
 import { lookupEntity } from '@/lib/chainabuse';
 import { prisma } from '@/lib/prisma';
-import { getClerkUserId } from '@/lib/auth';
-import { canCheck, incrementDailyCheckCount } from '@/lib/rate-limit';
+import { ensureLocalUser, getClerkUserId } from '@/lib/auth';
+import { canCheck } from '@/lib/rate-limit';
 import { hasProAccess } from '@/lib/paddle';
 import { checkRatelimit, getClientIp, checkRateLimit } from '@/lib/upstash';
 
 export const runtime = 'nodejs';
+
+function startOfToday(): Date {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
 
 /**
  * POST /api/check
@@ -77,11 +83,7 @@ export async function POST(req: NextRequest) {
     // 登录用户记录查询历史并更新计数
     try {
       if (clerkId) {
-        const user = await prisma.user.upsert({
-          where: { clerkId },
-          update: {},
-          create: { clerkId },
-        });
+        const user = await ensureLocalUser(clerkId);
         await prisma.checkRecord.create({
           data: {
             userId: user.id,
@@ -94,9 +96,14 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        // 免费版用户更新今日查询计数
+        // 免费版使用量以刚写入的历史记录为准。
         if (!isPro) {
-          const newCount = await incrementDailyCheckCount(clerkId);
+          const newCount = await prisma.checkRecord.count({
+            where: {
+              userId: user.id,
+              createdAt: { gte: startOfToday() },
+            },
+          });
           const remaining = Math.max(0, (checkLimit?.limit ?? 10) - newCount);
           return NextResponse.json(
             { result, usage: { used: newCount, limit: 10, remaining } },

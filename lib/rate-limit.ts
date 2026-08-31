@@ -37,31 +37,6 @@ export async function getDailyCheckCount(clerkId: string): Promise<number> {
 }
 
 /**
- * 增加今日查询次数（在查询成功后调用）。
- * 返回新的计数。
- */
-export async function incrementDailyCheckCount(clerkId: string): Promise<number> {
-  const user = await prisma.user.findUnique({
-    where: { clerkId },
-    select: { id: true },
-  });
-  if (!user) return 0;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // 统计今日已有的查询次数
-  const existingCount = await prisma.checkRecord.count({
-    where: {
-      userId: user.id,
-      createdAt: { gte: today },
-    },
-  });
-
-  return existingCount;
-}
-
-/**
  * 获取用户当前监控数量。
  * 使用缓存加速（1 分钟 TTL）。
  */
